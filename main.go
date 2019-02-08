@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
+	"github.com/aws/aws-sdk-go/aws/defaults"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"io/ioutil"
 	"log"
@@ -66,13 +67,15 @@ func main() {
 	// fmt.Println(string(res))
 	config := getConfig()
 	profile := config[getProfileName()]
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		Profile: profile.SourceProfile,
-	}))
+	source := config[profile.SourceProfile]
 
-	// DEBUG: Print parent creds
-	// val, _ := sess.Config.Credentials.Get()
-	// fmt.Println(val)
+	// Make sure that the credentials for the base session are correct
+	updatedAwsConfig := defaults.Config()
+	updatedAwsConfig.Credentials = credentials.NewStaticCredentials(source.Id, source.Secret, "")
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		// Profile: profile.SourceProfile,
+		Config: *updatedAwsConfig,
+	}))
 
 	var creds *credentials.Credentials
 	if role_arn := profile.RoleArn; len(role_arn) > 0 {

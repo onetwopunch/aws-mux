@@ -40,8 +40,10 @@ func (this *Parser) Parse(data []byte) Config {
 		if this.RegexAccount.MatchString(line) {
 			match := this.RegexAccount.FindStringSubmatch(line)
 			currentSection = match[1]
-			currentProfile = &Profile{SourceProfile: currentSection}
-			result[currentSection] = currentProfile
+			if result[currentSection] == nil {
+				currentProfile = &Profile{SourceProfile: currentSection}
+				result[currentSection] = currentProfile
+			}
 		} else if this.RegexSection.MatchString(line) {
 			match := this.RegexSection.FindStringSubmatch(line)
 			currentSection = match[1]
