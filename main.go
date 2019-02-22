@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 )
 
 func handleError(err error) {
@@ -56,11 +55,10 @@ func getConfig() Config {
 
 func main() {
 	// Make sure we don't use the wrong aws creds
-	for _, env := range os.Environ() {
-		if strings.Contains(env, "AWS_") {
-			os.Unsetenv(env)
-		}
-	}
+	os.Unsetenv("AWS_ACCESS_KEY_ID")
+	os.Unsetenv("AWS_SECRET_ACCESS_KEY")
+	os.Unsetenv("AWS_SESSION_TOKEN")
+
 
 	// DEBUG: Print entire config struct
 	// res, _ := json.MarshalIndent(config, "", "  ")
